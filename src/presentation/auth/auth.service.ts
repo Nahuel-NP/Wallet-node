@@ -18,24 +18,52 @@ export class AuthService {
       throw CustomError.badRequest("User already exists");
     }
 
-    // crear usuario
-    const newUser = await prisma.user.create({
-      data: {
-        ...registerUserDto,
-        password: bycriptAdapter.hash(registerUserDto.password),
-      },
-    });
+    try {
+      // crear usuario
+      const newUser = await prisma.user.create({
+        data: {
+          ...registerUserDto,
+          password: bycriptAdapter.hash(registerUserDto.password),
+        },
+      });
 
-    const { password: _, ...rest } = newUser;
-    // TODO:generar token
-    // retornar usuario y token
-    return {
-      user: rest,
-      token: "token",
-    };
+      // const random cvu
+
+      const newCvu = this.removeLettersFromString(newUser.id);
+      // crear wallet
+      const newWallet = await prisma.wallet.create({
+        data: {
+          userId: newUser.id,
+          cvu: newCvu,
+          balance: 100,
+          alias: "",
+          currency: "ARS",
+        },
+      });
+
+      const { password: _, ...rest } = newUser;
+      const { alias, cvu } = newWallet;
+      // TODO:generar token
+      // retornar usuario y token
+      return {
+        user: rest,
+        wallet: {
+          alias,
+          cvu,
+        },
+        token: "token",
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   public async login(loginUserDto: LoginUserDto) {
     return loginUserDto;
+  }
+
+  private removeLettersFromString(id: string) {
+    const regex = /\D+/g;
+    return id.replace(regex, "");
   }
 }
