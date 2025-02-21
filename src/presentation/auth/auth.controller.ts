@@ -29,10 +29,11 @@ export class AuthController {
   };
 
   register = (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
     const [error, registerUserDto] = RegisterUserDto.create({
       email,
       password,
+      name
     });
 
     if (error) return res.status(400).json({ error });
