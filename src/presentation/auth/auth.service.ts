@@ -1,6 +1,6 @@
 import { prisma } from "../../config/prismaClient";
-import { LoginUserDto } from "../../domain/dtos/loginUser.dto";
-import { RegisterUserDto } from "../../domain/dtos/registerUser.dto";
+import { LoginUserDto } from "../../domain/dtos/auth/loginUser.dto";
+import { RegisterUserDto } from "../../domain/dtos/auth/registerUser.dto";
 import { CustomError } from "../../domain/errors/custom.error";
 import { bycriptAdapter } from "../../config/bycript.adapter";
 
