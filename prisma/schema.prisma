@@ -8,14 +8,16 @@ generator client {
 }
 
 model User {
-  id        Int           @id @default(autoincrement())
-  name      String
-  email     String        @unique
-  password  String
-  wallet    Wallet?
-  logs      SecurityLog[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
+  name           String
+  email          String        @unique
+  emailValidated Boolean       @default(false)
+  isActive       Boolean       @default(true)
+  password       String
+  wallet         Wallet?
+  logs           SecurityLog[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model Wallet {
