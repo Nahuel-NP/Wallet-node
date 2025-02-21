@@ -2,17 +2,17 @@ import express, { Router } from "express";
 import { Server as ServerI } from "http";
 
 interface Options {
-  port?: number;
+  port: number;
   routes: Router;
 }
 export class Server {
   public readonly app = express();
-  private readonly port: number = 3000;
+  private readonly port: number;
   private readonly router: Router;
   private serverListener?: ServerI;
 
   constructor(options: Options) {
-    this.port = options.port || this.port;
+    this.port = options.port;
     this.router = options.routes;
   }
 
@@ -22,7 +22,7 @@ export class Server {
     this.app.use(this.router);
 
     this.serverListener = this.app.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}`);
+      console.log(`Server running on port http://localhost:${this.port}`);
     });
   }
 
