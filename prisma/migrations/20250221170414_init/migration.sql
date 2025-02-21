@@ -1,8 +1,10 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "emailValidated" BOOLEAN NOT NULL DEFAULT false,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -12,8 +14,10 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Wallet" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "cvu" INTEGER NOT NULL,
+    "alias" TEXT NOT NULL,
     "balance" DECIMAL(18,2) NOT NULL,
     "currency" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
@@ -25,8 +29,8 @@ CREATE TABLE "Wallet" (
 
 -- CreateTable
 CREATE TABLE "Transaction" (
-    "id" SERIAL NOT NULL,
-    "walletId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "walletId" TEXT NOT NULL,
     "transactionType" TEXT NOT NULL,
     "amount" DECIMAL(18,2) NOT NULL,
     "status" TEXT NOT NULL,
@@ -39,8 +43,8 @@ CREATE TABLE "Transaction" (
 
 -- CreateTable
 CREATE TABLE "Operation" (
-    "id" SERIAL NOT NULL,
-    "transactionId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "transactionId" TEXT NOT NULL,
     "amount" DECIMAL(18,2) NOT NULL,
     "operationType" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,8 +54,8 @@ CREATE TABLE "Operation" (
 
 -- CreateTable
 CREATE TABLE "SecurityLog" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "action" TEXT NOT NULL,
     "ipAddress" TEXT NOT NULL,
     "userAgent" TEXT NOT NULL,
@@ -62,6 +66,9 @@ CREATE TABLE "SecurityLog" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Wallet_userId_key" ON "Wallet"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Transaction_transactionId_key" ON "Transaction"("transactionId");
