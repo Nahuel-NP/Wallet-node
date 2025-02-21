@@ -3,6 +3,7 @@ import { LoginUserDto } from "../../domain/dtos/auth/loginUser.dto";
 import { RegisterUserDto } from "../../domain/dtos/auth/registerUser.dto";
 import { CustomError } from "../../domain/errors/custom.error";
 import { bycriptAdapter } from "../../config/bycript.adapter";
+import { UserEntity } from "../../domain/entities/user.entity";
 
 export class AuthService {
   constructor() {}
@@ -59,7 +60,59 @@ export class AuthService {
   }
 
   public async login(loginUserDto: LoginUserDto) {
-    return loginUserDto;
+    // corroborar si el usuario existe
+    const user = await prisma.user.findFirst({
+      where: {
+        email: loginUserDto.email,
+      },
+    });
+    if (!user) {
+      throw CustomError.badRequest("User does not exist");
+    }
+    // corroborar si la contraseña es correcta
+    const validPassword = bycriptAdapter.compare(
+      loginUserDto.password,
+      user.password
+    );
+
+    if (!validPassword) {
+      throw CustomError.badRequest("Invalid password");
+    }
+
+    // comprobar si esta activo
+
+    if (!user.isActive) {
+      throw CustomError.unauthorized("User is not active");
+    }
+    // comprobar si esta validado el email
+    if (!user.emailValidated) {
+      //TODO: send validation email
+      throw CustomError.unauthorized("Email not validated");
+    }
+    //TODO: generar token
+    // obtener wallet
+    const wallet = await prisma.wallet.findFirst({
+      where: {
+        userId: user.id,
+      },
+    });
+    
+    // Transaciones?
+
+    if (!wallet) {
+      throw CustomError.internalServer("Wallet not found");
+    }
+
+    const userToReturn = UserEntity.fromObject(user);
+    const { alias, cvu } = wallet;
+    return {
+      user: userToReturn,
+      wallet: {
+        alias,
+        cvu,
+      },
+      token: "token",
+    };
   }
 
   private removeLettersFromString(id: string) {
