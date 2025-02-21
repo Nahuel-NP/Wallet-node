@@ -1,4 +1,4 @@
-export class loginUserDto {
+export class LoginUserDto {
   readonly email: string;
   readonly password: string;
 
@@ -7,11 +7,11 @@ export class loginUserDto {
     this.password = password;
   }
 
-  static create(object: { [key: string]: any }): [string?, loginUserDto?] {
+  static create(object: { [key: string]: any }): [string?, LoginUserDto?] {
     const { email, password } = object;
     if (!email) return ["Missing email"];
     if (!password) return ["Missing password"];
 
-    return [undefined, new loginUserDto(email, password)];
+    return [undefined, new LoginUserDto(email, password)];
   }
 }
