@@ -8,7 +8,6 @@ export class UserEntity {
     public readonly name:string,
     public readonly email:string,
     public readonly emailValidated:boolean,
-
     public readonly isActive:boolean,
     public readonly img?:string,
   ){}
