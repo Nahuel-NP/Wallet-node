@@ -4,6 +4,7 @@ import { RegisterUserDto } from "../../domain/dtos/auth/registerUser.dto";
 import { CustomError } from "../../domain/errors/custom.error";
 import { bycriptAdapter } from "../../config/bycript.adapter";
 import { UserEntity } from "../../domain/entities/user.entity";
+import { JwtAdapter } from "../../config/jwt.adapter";
 
 export class AuthService {
   constructor() {}
@@ -44,15 +45,16 @@ export class AuthService {
 
       const { password: _, ...rest } = newUser;
       const { alias, cvu } = newWallet;
-      // TODO:generar token
-      // retornar usuario y token
+
+
+      const token = await JwtAdapter.generateToken({ id: newUser.id });
       return {
         user: rest,
         wallet: {
           alias,
           cvu,
         },
-        token: "token",
+        token,
       };
     } catch (error) {
       console.log(error);
@@ -89,14 +91,16 @@ export class AuthService {
       //TODO: send validation email
       throw CustomError.unauthorized("Email not validated");
     }
-    //TODO: generar token
+
+    const token = await JwtAdapter.generateToken({ id: user.id });
     // obtener wallet
+
     const wallet = await prisma.wallet.findFirst({
       where: {
         userId: user.id,
       },
     });
-    
+
     // Transaciones?
 
     if (!wallet) {
@@ -111,7 +115,7 @@ export class AuthService {
         alias,
         cvu,
       },
-      token: "token",
+      token,
     };
   }
 
