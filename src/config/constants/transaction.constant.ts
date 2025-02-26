@@ -9,3 +9,8 @@ export const STATUS = {
   COMPLETED:'completed',
   REJECTED:'rejected'
 }
+
+export const OPERATION_TYPE = {
+  DEBIT:'debit',
+  CREDIT:'credit'
+}
