@@ -19,10 +19,8 @@ export class TransferController {
 
     if (error) return res.status(400).json({ error });
 
-    this.TransferService.makeTransfer(transferDto!,user)
-      .then((transfer) => {
-        res.json(transfer);
-      })
+    this.TransferService.makeTransfer(transferDto!, user)
+      .then((transfer) => res.json(transfer))
       .catch((error) => this.handleErrors(error, res));
   };
 }
