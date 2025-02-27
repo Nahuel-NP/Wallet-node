@@ -3,7 +3,7 @@ import { TransferController } from "./transfer.controller";
 import { TransferService } from "./transfer.service";
 import { AuthMiddlaware } from "../../middlewares/auth.midleware";
 
-export class TransferRoute {
+export class TransferRoutes {
   static get routes(): Router {
     const router = Router();
     const transferService = new TransferService();
