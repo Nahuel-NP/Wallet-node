@@ -46,7 +46,6 @@ export class AuthService {
       const { password: _, ...rest } = newUser;
       const { alias, cvu } = newWallet;
 
-
       const token = await JwtAdapter.generateToken({ id: newUser.id });
       return {
         user: rest,
@@ -108,12 +107,13 @@ export class AuthService {
     }
 
     const userToReturn = UserEntity.fromObject(user);
-    const { alias, cvu } = wallet;
+    const { alias, cvu, balance } = wallet;
     return {
       user: userToReturn,
       wallet: {
         alias,
         cvu,
+        balance,
       },
       token,
     };
