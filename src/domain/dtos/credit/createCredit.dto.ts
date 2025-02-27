@@ -1,6 +1,6 @@
 export class CreateCreditDto {
   
-  constructor(private readonly amount: number) {}
+  constructor(readonly amount: number) {}
 
   static create(object: {
     [key: string]: any;
