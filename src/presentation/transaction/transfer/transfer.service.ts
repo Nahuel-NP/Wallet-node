@@ -5,8 +5,8 @@ import { CustomError } from "../../../domain/errors/custom.error";
 import { PrismaTx } from "../../../config/types/tx.type";
 import { Transaction, Wallet } from "@prisma/client";
 import {
+  SECURY_LOG_ACTION,
   STATUS,
-  TRANSACTION_TYPE,
 } from "../../../config/constants/transaction.constant";
 import { TransactionEntity } from "../../../domain/entities/transaction.entity";
 
@@ -112,7 +112,7 @@ export class TransferService {
         await ctx.securityLog.create({
           data: {
             userId: user.id,
-            action: TRANSACTION_TYPE.TRANSFER,
+            action: SECURY_LOG_ACTION.TRANSFER,
             ipAddress: "TODO",
             userAgent: "TODO",
           },
@@ -130,7 +130,7 @@ export class TransferService {
       await prisma.securityLog.create({
         data: {
           userId: user.id,
-          action: TRANSACTION_TYPE.TRANSFER,
+          action: SECURY_LOG_ACTION.TRANSFER_FAILED,
           ipAddress: "TODO",
           userAgent: "TODO",
         },
