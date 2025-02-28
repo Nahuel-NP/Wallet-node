@@ -8,6 +8,7 @@ import {
   STATUS,
   TRANSACTION_TYPE,
 } from "../../../config/constants/transaction.constant";
+import { TransactionEntity } from "../../../domain/entities/transaction.entity";
 
 export class TransferService {
   async makeTransfer(trasnferDto: TransferDto, user: UserEntity) {
@@ -42,9 +43,11 @@ export class TransferService {
       walletId: originWallet.id,
     });
 
+    
     if (!transaction) {
       throw CustomError.internalServer("Transaction not created");
     }
+    const transactionEntity = TransactionEntity.fromObject(transaction);
 
     // process transfer in background
     this.processTransfer({
@@ -56,7 +59,7 @@ export class TransferService {
     });
 
     // return transaction with pending state
-    return transaction;
+    return transactionEntity;
   }
 
   private async processTransfer(options: {
