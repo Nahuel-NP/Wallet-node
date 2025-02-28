@@ -1,14 +1,17 @@
-import { Transaction, Wallet } from "@prisma/client";
+import { Transaction, User, Wallet } from "@prisma/client";
 import { prisma } from "../../config/prismaClient";
 import { CreateCreditDto } from "../../domain/dtos/credit/createCredit.dto";
 import { UserEntity } from "../../domain/entities/user.entity";
 import {
+  OPERATION_TYPE,
+  SECURY_LOG_ACTION,
   STATUS,
   TRANSACTION_TYPE,
 } from "../../config/constants/transaction.constant";
+import { TransactionEntity } from "../../domain/entities/transaction.entity";
 
 export class CreditService {
-  async getCredit(userToCredit: UserEntity, createCreditDto: CreateCreditDto) {
+  async deposit(userToCredit: UserEntity, createCreditDto: CreateCreditDto) {
     const user = await prisma.user.findUnique({
       where: {
         id: userToCredit.id,
@@ -35,7 +38,11 @@ export class CreditService {
       createCreditDto.amount
     );
 
-    return transaction;
+    // proces accredit
+    this.processDeposit(transaction, user);
+
+    const transactionEntity = TransactionEntity.fromObject(transaction);
+    return transactionEntity;
   }
 
   private async initTransaction(
@@ -54,5 +61,69 @@ export class CreditService {
     });
 
     return transaction;
+  }
+
+  private async processDeposit(transaction: Transaction, user: User) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        
+        await tx.wallet.update({
+          where: {
+            id: transaction.walletId,
+          },
+          data: {
+            balance: { increment: transaction.amount },
+          },
+        });
+
+        const operation = await tx.operation.create({
+          data: {
+            amount: transaction.amount,
+            operationType: OPERATION_TYPE.CREDIT,
+            transactionId: transaction.id,
+          },
+        });
+
+        await tx.transaction.update({
+          where: {
+            transactionId: transaction.transactionId,
+          },
+          data: {
+            status: STATUS.COMPLETED,
+            operations: {
+              connect: { id: operation.id },
+            },
+          },
+        });
+      });
+      await prisma.securityLog.create({
+        data: {
+          action: SECURY_LOG_ACTION.DEPOSIT,
+          ipAddress: "TODO",
+          userAgent: "TODO",
+          userId: user.id,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      prisma.transaction.update({
+        where: {
+          transactionId: transaction.transactionId,
+        },
+        data: {
+          status: STATUS.REJECTED,
+        },
+      });
+
+      prisma.securityLog.create({
+        data: {
+          action: SECURY_LOG_ACTION.DEPOSIT_FAILED,
+          ipAddress: "TODO",
+          userAgent: "TODO",
+          userId: user.id,
+        },
+      });
+    }
   }
 }
