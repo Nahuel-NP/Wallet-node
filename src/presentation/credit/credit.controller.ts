@@ -14,18 +14,18 @@ export class CreditController {
   };
 
   makeCredit = (req: Request, res: Response) => {
-    const { user, amout } = req.body;
-
+    const { user, amount } = req.body;
     const [error, createCreditDto] = CreateCreditDto.create({
-      amout,
+      amount,
     });
+    console.log({ createCreditDto });
 
     if (error) {
       return res.status(400).json({ error });
     }
 
     this.creditService
-      .getCredit(user, createCreditDto!)
+      .deposit(user, createCreditDto!)
       .then((credit) => res.json(credit))
       .catch((error) => this.handleErrors(error, res));
   };
