@@ -14,3 +14,12 @@ export const OPERATION_TYPE = {
   DEBIT:'debit',
   CREDIT:'credit'
 }
+
+export const SECURY_LOG_ACTION = {
+  DEPOSIT:'deposit',
+  WITHDRAW:'withdraw',
+  TRANSFER:'transfer',
+  LOGIN:'login',
+  TRANSFER_FAILED:'transfer_failed',
+  DEPOSIT_FAILED:'deposit_failed',
+}
