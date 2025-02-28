@@ -18,7 +18,6 @@ export class CreditController {
     const [error, createCreditDto] = CreateCreditDto.create({
       amount,
     });
-    console.log({ createCreditDto });
 
     if (error) {
       return res.status(400).json({ error });
