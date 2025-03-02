@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { CreditController } from "./credit.controller";
 import { CreditService } from "./credit.service";
-import { AuthMiddlaware } from "../middlewares/auth.midleware";
+import { AuthMiddlaware } from "../../middlewares/auth.midleware";
+
 
 export class CreditRoutes {
   static get routes(): Router {

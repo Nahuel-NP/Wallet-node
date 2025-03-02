@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { CreditService } from "./credit.service";
-import { CustomError } from "../../domain/errors/custom.error";
-import { CreateCreditDto } from "../../domain/dtos/credit/createCredit.dto";
+import { CustomError } from "../../../domain/errors/custom.error";
+import { CreateCreditDto } from "../../../domain/dtos/credit/createCredit.dto";
+
 
 export class CreditController {
   constructor(private readonly creditService: CreditService) {}

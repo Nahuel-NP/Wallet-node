@@ -1,14 +1,14 @@
 import { Transaction, User, Wallet } from "@prisma/client";
-import { prisma } from "../../config/prismaClient";
-import { CreateCreditDto } from "../../domain/dtos/credit/createCredit.dto";
-import { UserEntity } from "../../domain/entities/user.entity";
+import { prisma } from "../../../config/prismaClient";
+import { CreateCreditDto } from "../../../domain/dtos/credit/createCredit.dto";
+import { UserEntity } from "../../../domain/entities/user.entity";
 import {
   OPERATION_TYPE,
   SECURY_LOG_ACTION,
   STATUS,
   TRANSACTION_TYPE,
-} from "../../config/constants/transaction.constant";
-import { TransactionEntity } from "../../domain/entities/transaction.entity";
+} from "../../../config/constants/transaction.constant";
+import { TransactionEntity } from "../../../domain/entities/transaction.entity";
 
 export class CreditService {
   async deposit(userToCredit: UserEntity, createCreditDto: CreateCreditDto) {
