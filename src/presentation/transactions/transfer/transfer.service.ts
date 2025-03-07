@@ -11,7 +11,7 @@ import {
 import { TransactionEntity } from "../../../domain/entities/transaction.entity";
 
 export class TransferService {
-  async makeTransfer(trasnferDto: TransferDto, user: UserEntity) {
+  async makeTransfer(trasnferDto: TransferDto, user: UserEntity,ipAddress: string, userAgent: string) {
     const { cvuOrAlias, amount } = trasnferDto;
 
     // get origin wallet
@@ -56,6 +56,8 @@ export class TransferService {
       destinationWallet,
       transaction,
       user,
+      ipAddress,
+      userAgent,
     });
 
     // return transaction with pending state
@@ -68,8 +70,10 @@ export class TransferService {
     destinationWallet: Wallet;
     transaction: Transaction;
     user: UserEntity;
+    ipAddress: string;
+    userAgent: string;
   }) {
-    const { amount, originWallet, destinationWallet, transaction, user } =
+    const { amount, originWallet, destinationWallet, transaction, user,ipAddress,userAgent } =
       options;
 
     try {
@@ -113,8 +117,8 @@ export class TransferService {
           data: {
             userId: user.id,
             action: SECURY_LOG_ACTION.TRANSFER,
-            ipAddress: "TODO",
-            userAgent: "TODO",
+            ipAddress,
+            userAgent
           },
         });
 
