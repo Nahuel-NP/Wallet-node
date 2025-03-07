@@ -19,7 +19,12 @@ export class TransferController {
 
     if (error) return res.status(400).json({ error });
 
-    this.TransferService.makeTransfer(transferDto!, user)
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string) || req.ip || "Unknown";
+
+    const userAgent = req.headers["user-agent"] || "Unknown";
+
+    this.TransferService.makeTransfer(transferDto!, user, ipAddress, userAgent)
       .then((transfer) => res.json(transfer))
       .catch((error) => this.handleErrors(error, res));
   };
