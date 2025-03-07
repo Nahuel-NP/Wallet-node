@@ -33,6 +33,9 @@ export class TransactionService {
       },
       skip: (paginationDto.page - 1) * paginationDto.limit,
       take: paginationDto.limit,
+      orderBy:{
+        createdAt: 'desc'
+      }
     });
     
     return transactions.map((transaction) =>
