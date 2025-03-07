@@ -7,10 +7,7 @@ import { CustomError } from "../../domain/errors/custom.error";
 export class TransactionService {
   constructor() {}
 
-  public async getTransactions(
-    user: UserEntity,
-    paginationDto: PaginationDto
-  ): Promise<TransactionEntity[]> {
+  public async getTransactions(user: UserEntity, paginationDto: PaginationDto) {
     const userFromDB = await prisma.user.findFirst({
       where: {
         id: user.id,
@@ -33,13 +30,36 @@ export class TransactionService {
       },
       skip: (paginationDto.page - 1) * paginationDto.limit,
       take: paginationDto.limit,
-      orderBy:{
-        createdAt: 'desc'
-      }
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        operations: {
+          select: {
+            amount: true,
+            operationType: true,
+          },
+        },
+      },
     });
-    
-    return transactions.map((transaction) =>
-      TransactionEntity.fromObject(transaction)
-    );
+
+    const totalTransactions = await prisma.transaction.count({
+      where: {
+        walletId: wallet.id,
+      },
+    });
+    console.log(transactions);
+    return {
+      transactions: transactions.map((transaction) =>
+        TransactionEntity.fromObject(transaction)
+      ),
+      meta: {
+        page: paginationDto.page,
+        limit: paginationDto.limit,
+        totalCurrentPage: transactions.length,
+        totalItems: totalTransactions,
+        totalPages: Math.ceil(totalTransactions / paginationDto.limit),
+      },
+    };
   }
 }
