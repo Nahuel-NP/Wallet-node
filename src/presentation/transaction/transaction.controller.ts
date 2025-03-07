@@ -27,7 +27,7 @@ export class TransactionController {
 
     this.transactionService
       .getTransactions(user, paginationDto!)
-      .then((transactions) => res.json({ transactions }))
+      .then((transactions) => res.json(transactions ))
       .catch((error) => this.handleErrors(error, res));
   };
 }
