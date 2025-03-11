@@ -15,9 +15,9 @@ export class TransferService {
     const { cvuOrAlias, amount } = trasnferDto;
 
     // get origin wallet
-    const originWallet = await this.getWalletByUser(user.id);
+    const senderWallet = await this.getWalletByUser(user.id);
 
-    if (Number(originWallet.balance) < amount) {
+    if (Number(senderWallet.balance) < amount) {
       throw CustomError.badRequest("Insufficient balance");
     }
 
@@ -40,7 +40,7 @@ export class TransferService {
       transactionId: crypto.randomUUID(),
       transactionType: "transfer",
       amount: amount,
-      walletId: originWallet.id,
+      senderWalletId: senderWallet.id,
     });
 
     
@@ -52,8 +52,8 @@ export class TransferService {
     // process transfer in background
     this.processTransfer({
       amount,
-      originWallet,
-      destinationWallet,
+      senderWallet,
+      receiverWallet: destinationWallet,
       transaction,
       user,
       ipAddress,
@@ -66,22 +66,22 @@ export class TransferService {
 
   private async processTransfer(options: {
     amount: number;
-    originWallet: Wallet;
-    destinationWallet: Wallet;
+    senderWallet: Wallet;
+    receiverWallet: Wallet;
     transaction: Transaction;
     user: UserEntity;
     ipAddress: string;
     userAgent: string;
   }) {
-    const { amount, originWallet, destinationWallet, transaction, user,ipAddress,userAgent } =
+    const { amount, senderWallet, receiverWallet, transaction, user,ipAddress,userAgent } =
       options;
 
     try {
       await prisma.$transaction(async (ctx) => {
         // update wallets
         const [updatedFromWallet, updatedToWallet] = await Promise.all([
-          this.decreaseAmountWallet(ctx, user.id, originWallet, amount),
-          this.increaseAmountWallet(ctx, destinationWallet, amount),
+          this.decreaseAmountWallet(ctx, user.id, senderWallet, amount),
+          this.increaseAmountWallet(ctx, receiverWallet, amount),
         ]);
         if (!updatedFromWallet || !updatedToWallet) {
           throw CustomError.internalServer("Wallet not updated");
@@ -135,8 +135,8 @@ export class TransferService {
         data: {
           userId: user.id,
           action: SECURY_LOG_ACTION.TRANSFER_FAILED,
-          ipAddress: "TODO",
-          userAgent: "TODO",
+          ipAddress,
+          userAgent
         },
       });
 
@@ -148,7 +148,7 @@ export class TransferService {
     transactionId: string;
     transactionType: string;
     amount: number;
-    walletId: string;
+    senderWalletId: string;
   }) {
     const transacion = await prisma.transaction.create({
       data: {
@@ -156,7 +156,7 @@ export class TransferService {
         transactionId: transactionOption.transactionId,
         amount: transactionOption.amount,
         transactionType: transactionOption.transactionType,
-        walletId: transactionOption.walletId,
+        senderWalletId: transactionOption.senderWalletId,
       },
     });
 
