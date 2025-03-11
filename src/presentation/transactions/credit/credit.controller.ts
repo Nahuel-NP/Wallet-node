@@ -23,9 +23,13 @@ export class CreditController {
     if (error) {
       return res.status(400).json({ error });
     }
+    const ipAddress =
+    (req.headers["x-forwarded-for"] as string) || req.ip || "Unknown";
+
+  const userAgent = req.headers["user-agent"] || "Unknown";
 
     this.creditService
-      .deposit(user, createCreditDto!)
+      .deposit(user, createCreditDto!,ipAddress,userAgent)
       .then((credit) => res.json(credit))
       .catch((error) => this.handleErrors(error, res));
   };

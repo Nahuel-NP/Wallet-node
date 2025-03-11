@@ -11,7 +11,7 @@ import {
 import { TransactionEntity } from "../../../domain/entities/transaction.entity";
 
 export class CreditService {
-  async deposit(userToCredit: UserEntity, createCreditDto: CreateCreditDto) {
+  async deposit(userToCredit: UserEntity, createCreditDto: CreateCreditDto,ipAddress: string, userAgent: string) {
     const user = await prisma.user.findUnique({
       where: {
         id: userToCredit.id,
@@ -39,7 +39,7 @@ export class CreditService {
     );
 
     // proces accredit
-    this.processDeposit(transaction, user);
+    this.processDeposit(transaction, user,ipAddress,userAgent);
 
     const transactionEntity = TransactionEntity.fromObject(transaction);
     return transactionEntity;
@@ -53,7 +53,7 @@ export class CreditService {
     const transaction = await prisma.transaction.create({
       data: {
         amount,
-        walletId: wallet.id,
+        receiverWalletId: wallet.id,
         transactionType: TRANSACTION_TYPE.DEPOSIT,
         transactionId: transcationId,
         status: STATUS.PENDING,
@@ -63,13 +63,13 @@ export class CreditService {
     return transaction;
   }
 
-  private async processDeposit(transaction: Transaction, user: User) {
+  private async processDeposit(transaction: Transaction, user: User,ipAddress: string, userAgent: string) {
     try {
       await prisma.$transaction(async (tx) => {
         
         await tx.wallet.update({
           where: {
-            id: transaction.walletId,
+            id: transaction.receiverWalletId!,
           },
           data: {
             balance: { increment: transaction.amount },
@@ -99,8 +99,8 @@ export class CreditService {
       await prisma.securityLog.create({
         data: {
           action: SECURY_LOG_ACTION.DEPOSIT,
-          ipAddress: "TODO",
-          userAgent: "TODO",
+          ipAddress: ipAddress,
+          userAgent: userAgent,
           userId: user.id,
         },
       });
@@ -119,8 +119,8 @@ export class CreditService {
       prisma.securityLog.create({
         data: {
           action: SECURY_LOG_ACTION.DEPOSIT_FAILED,
-          ipAddress: "TODO",
-          userAgent: "TODO",
+          ipAddress: ipAddress,
+          userAgent: userAgent,
           userId: user.id,
         },
       });
