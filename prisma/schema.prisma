@@ -40,8 +40,8 @@ model Transaction {
   id               String      @id @default(uuid())
   senderWallet     Wallet?     @relation(name: "SentTransactions", fields: [senderWalletId], references: [id])
   senderWalletId   String?
-  receiverWallet   Wallet      @relation(name: "ReceivedTransactions", fields: [receiverWalletId], references: [id])
-  receiverWalletId String
+  receiverWallet   Wallet?      @relation(name: "ReceivedTransactions", fields: [receiverWalletId], references: [id])
+  receiverWalletId String?
   transactionType  String // Ej: 'deposit', 'withdrawal', 'transfer'
   amount           Decimal     @db.Decimal(18, 2)
   status           String // Ej: 'pending', 'completed', 'failed'
