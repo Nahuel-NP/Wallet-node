@@ -26,29 +26,20 @@ export class TransactionService {
 
     const transactions = await prisma.transaction.findMany({
       where: {
-        walletId: wallet.id,
+        OR: [{ senderWalletId: wallet.id }, { receiverWalletId: wallet.id }],
       },
       skip: (paginationDto.page - 1) * paginationDto.limit,
       take: paginationDto.limit,
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        operations: {
-          select: {
-            amount: true,
-            operationType: true,
-          },
-        },
-      },
     });
 
     const totalTransactions = await prisma.transaction.count({
       where: {
-        walletId: wallet.id,
+        OR: [{ senderWalletId: wallet.id }, { receiverWalletId: wallet.id }],
       },
     });
-    console.log(transactions);
     return {
       transactions: transactions.map((transaction) =>
         TransactionEntity.fromObject(transaction)
