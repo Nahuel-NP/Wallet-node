@@ -106,6 +106,7 @@ export class TransferService {
           },
           data: {
             status: STATUS.COMPLETED,
+            receiverWalletId: receiverWallet.id,
             operations: {
               connect: [{ id: debitOperation.id }, { id: creditOperation.id }],
             },
