@@ -5,6 +5,7 @@ import { CustomError } from "../../domain/errors/custom.error";
 import { bycriptAdapter } from "../../config/bycript.adapter";
 import { UserEntity } from "../../domain/entities/user.entity";
 import { JwtAdapter } from "../../config/jwt.adapter";
+import { SECURY_LOG_ACTION } from "../../config/constants/transaction.constant";
 
 export class AuthService {
   constructor() {}
@@ -60,7 +61,11 @@ export class AuthService {
     }
   }
 
-  public async login(loginUserDto: LoginUserDto) {
+  public async login(
+    loginUserDto: LoginUserDto,
+    ipAddress: string,
+    userAgent: string
+  ) {
     // corroborar si el usuario existe
     const user = await prisma.user.findFirst({
       where: {
@@ -106,6 +111,14 @@ export class AuthService {
       throw CustomError.internalServer("Wallet not found");
     }
 
+    prisma.securityLog.create({
+      data: {
+        action: SECURY_LOG_ACTION.LOGIN,
+        ipAddress: ipAddress,
+        userAgent: userAgent,
+        userId: user.id,
+      },
+    });
     const userToReturn = UserEntity.fromObject(user);
     const { alias, cvu, balance } = wallet;
     return {

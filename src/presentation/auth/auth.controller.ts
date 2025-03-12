@@ -20,8 +20,11 @@ export class AuthController {
 
     if (error) return res.status(400).json({ error });
 
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string) || req.ip || "Unknown";
+    const userAgent = req.headers["user-agent"] || "Unknown";
     this.authservice
-      .login(loginUserDto!)
+      .login(loginUserDto!, ipAddress, userAgent)
       .then((user) => res.json(user))
       .catch((error) => this.handleError(error, res));
   };
