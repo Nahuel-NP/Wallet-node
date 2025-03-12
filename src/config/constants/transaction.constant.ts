@@ -17,7 +17,8 @@ export const OPERATION_TYPE = {
 
 export const SECURY_LOG_ACTION = {
   DEPOSIT:'deposit',
-  WITHDRAW:'withdraw',
+  WITHDRAWAL:'withdrawal',
+  WITHDRAWAL_FAILED:'withdrawal_failed',
   TRANSFER:'transfer',
   LOGIN:'login',
   TRANSFER_FAILED:'transfer_failed',
