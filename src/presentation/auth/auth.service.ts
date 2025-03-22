@@ -34,7 +34,7 @@ export class AuthService {
 
       const newCvu = this.removeLettersFromString(newUser.id);
       // crear wallet
-      const newWallet = await prisma.wallet.create({
+      await prisma.wallet.create({
         data: {
           userId: newUser.id,
           cvu: newCvu,
@@ -45,15 +45,10 @@ export class AuthService {
       });
 
       const { password: _, ...rest } = newUser;
-      const { alias, cvu } = newWallet;
 
       const token = await JwtAdapter.generateToken({ id: newUser.id });
       return {
         user: rest,
-        wallet: {
-          alias,
-          cvu,
-        },
         token,
       };
     } catch (error) {
@@ -120,14 +115,8 @@ export class AuthService {
       },
     });
     const userToReturn = UserEntity.fromObject(user);
-    const { alias, cvu, balance } = wallet;
     return {
       user: userToReturn,
-      wallet: {
-        alias,
-        cvu,
-        balance,
-      },
       token,
     };
   }
