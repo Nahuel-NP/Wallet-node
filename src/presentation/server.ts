@@ -20,8 +20,8 @@ export class Server {
   start() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(this.router);
     this.app.use(cors())
+    this.app.use(this.router);
 
     this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port http://localhost:${this.port}`);
