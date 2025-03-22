@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import { Server as ServerI } from "http";
+import cors from "cors";
 
 interface Options {
   port: number;
@@ -20,6 +21,7 @@ export class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(this.router);
+    this.app.use(cors())
 
     this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port http://localhost:${this.port}`);
